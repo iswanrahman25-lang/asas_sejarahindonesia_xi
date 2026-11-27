@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CBT ASAS Ganjil 2026/2027 - SMAIT Al Ishlah Gorontalo</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #f4f7f6;
+      color: #1e293b;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none; /* Mencegah copy-paste soal secara mudah */
+    }
+
+    /* Pola geometris halus bernuansa Islami untuk header login */
+    .islamic-pattern {
+      background-color: #064e3b;
+      background-image: radial-gradient(rgba(16, 185, 129, 0.16) 1.5px, transparent 1.5px),
+                        radial-gradient(rgba(251, 191, 36, 0.1) 1.5px, #064e3b 1.5px);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+    }
+
+    /* Styling tabel di dalam stimulus soal */
+    .stimulus-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .stimulus-content th {
+      background-color: #047857;
+      color: #ffffff;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid #065f46;
+    }
+
+    .stimulus-content td {
+      padding: 0.625rem 0.875rem;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    .stimulus-content tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    @keyframes pulse-urgent {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .timer-urgent {
+      animation: pulse-urgent 1s infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- =====================================================================
+       LOADING OVERLAY GLOBAL (SAAT FETCH DATA / KIRIM JAWABAN)
+  ====================================================================== -->
+  <div id="global-loader" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-100">
+      <div class="mx-auto w-14 h-14 rounded-full bg-brand-50 flex items-center justify-center mb-4">
+        <svg class="w-8 h-8 text-brand-600 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <h3 id="loader-title" class="text-lg font-bold text-slate-800">Memuat Data...</h3>
+      <p id="loader-subtitle" class="text-sm text-slate-500 mt-1">Mohon tunggu sebentar, sedang menghubungkan ke server sekolah.</p>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CUSTOM MODAL DIALOG (KONFIRMASI KUMPUL / PERINGATAN TAB / NOTIFIKASI)
+  ====================================================================== -->
+  <div id="custom-modal" class="fixed inset-0 z-50 hidden bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 transform transition-all">
+      <div id="modal-header-bar" class="h-2 bg-brand-600"></div>
+      <div class="p-6">
+        <div class="flex items-start gap-4">
+          <div id="modal-icon-wrapper" class="flex-shrink-0 w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+            <!-- Icon disuntikkan via JS -->
+          </div>
+          <div class="flex-1">
+            <h3 id="modal-title" class="text-lg font-bold text-slate-900 leading-snug">Konfirmasi</h3>
+            <div id="modal-body" class="text-sm text-slate-600 mt-2 space-y-2 leading-relaxed"></div>
+          </div>
+        </div>
+        <div id="modal-actions" class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5">
+          <!-- Tombol aksi disuntikkan via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       HALAMAN 1: LOGIN & IDENTITAS PESERTA UJIAN
+  ====================================================================== -->
+  <main id="view-login" class="flex-1 flex flex-col justify-between">
+    <!-- Hero Header -->
+    <div class="islamic-pattern text-white pt-8 pb-20 px-4 shadow-md">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white p-2 shadow-lg mb-4 ring-4 ring-white/15">
+          <img
+            src="https://iili.io/Ce8iqts.png"
+            alt="Logo SMAIT Al Ishlah Gorontalo"
+            class="w-full h-full object-contain"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+          />
+          <div style="display:none;" class="w-full h-full rounded-xl bg-brand-700 text-white font-extrabold text-xl items-center justify-center flex-col leading-none">
+            <span>SMAIT</span>
+            <span class="text-[10px] font-semibold text-gold-400 mt-0.5">AL ISHLAH</span>
+          </div>
+        </div>
+
+        <div class="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/20 text-gold-400 text-xs font-semibold tracking-wider uppercase mb-2">
+          Computer-Based Test (CBT)
+        </div>
+        <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
+          SMA ISLAM TERPADU AL ISHLAH GORONTALO
+        </h1>
+        <p class="text-brand-100 text-sm sm:text-base mt-1 font-medium">
+          Asesmen Sumatif Akhir Semester (ASAS) Ganjil Tahun Pelajaran 2026/2027
+        </p>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="max-w-xl w-full mx-auto px-4 -mt-12 mb-10">
+      <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+        <!-- Info Ringkas Ujian -->
+        <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Kelas / Fase</span>
+            <span class="text-sm font-bold text-slate-800">XI / Fase F</span>
+          </div>
+          <div class="border-x border-slate-200">
+            <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Jumlah Soal</span>
+            <span class="text-sm font-bold text-slate-800">25 Butir</span>
+          </div>
+          <div>
+            <span class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400">Alokasi Waktu</span>
+            <span class="text-sm font-bold text-brand-700">60 Menit</span>
+          </div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-6">
+          <!-- Status Koneksi GAS -->
+          <div id="gas-status-banner" class="hidden rounded-xl p-3.5 text-xs flex items-start gap-3 border">
+            <span id="gas-status-icon" class="mt-0.5 flex-shrink-0"></span>
+            <div class="flex-1">
+              <p id="gas-status-text" class="font-medium leading-relaxed"></p>
+              <button id="btn-retry-fetch" type="button" class="hidden mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Muat Ulang Data
+              </button>
+            </div>
+          </div>
+
+          <!-- Form Pemilihan Siswa & Mapel -->
+          <form id="login-form" class="space-y-5" autocomplete="off">
+            <!-- Pencarian & Pilihan Nama Siswa -->
+            <div class="relative" id="student-dropdown-container">
+              <label for="student-search-input" class="block text-sm font-bold text-slate-700 mb-1.5">
+                Nama Peserta Didik <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  id="student-search-input"
+                  placeholder="Ketik atau pilih nama Anda..."
+                  class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition"
+                />
+                <button
+                  type="button"
+                  id="btn-clear-student"
+                  title="Hapus pilihan"
+                  class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <input type="hidden" id="selected-student-value" value="" />
+
+              <!-- Dropdown List Nama Siswa -->
+              <div
+                id="student-dropdown-list"
+                class="hidden absolute z-30 mt-1.5 w-full bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto divide-y divide-slate-100"
+              >
+                <!-- Item daftar siswa diisi oleh JS -->
+              </div>
+            </div>
+
+            <!-- Pilihan Mata Pelajaran -->
+            <div>
+              <label for="subject-select" class="block text-sm font-bold text-slate-700 mb-1.5">
+                Mata Pelajaran <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="subject-select"
+                  class="w-full pl-4 pr-10 py-3 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white appearance-none transition"
+                >
+                  <option value="Sejarah Indonesia">Sejarah Indonesia (Kelas XI / Fase F)</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-500">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Tata Tertib Singkat -->
+            <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-4 text-xs text-amber-900 space-y-1.5">
+              <div class="font-bold flex items-center gap-1.5 text-amber-800">
+                <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>Perhatian & Integritas Ujian:</span>
+              </div>
+              <ul class="list-disc pl-5 space-y-1 text-amber-800/90">
+                <li>Berdoalah sebelum memulai asesmen.</li>
+                <li>Sistem mendeteksi dan mencatat secara otomatis apabila peserta berpindah tab atau keluar dari layar ujian.</li>
+                <li>Setiap peserta hanya diperbolehkan mengerjakan <strong>1 (satu) kali</strong> untuk setiap mata pelajaran.</li>
+              </ul>
+            </div>
+
+            <!-- Tombol Mulai Ujian -->
+            <button
+              type="submit"
+              id="btn-start-exam"
+              class="w-full py-3.5 px-6 rounded-xl bg-brand-700 hover:bg-brand-800 active:bg-brand-900 text-white font-bold text-base shadow-lg shadow-brand-700/25 flex items-center justify-center gap-2 transition transform active:scale-[0.99]"
+            >
+              <span>Mulai Ujian Sekarang</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center text-xs text-slate-400 pb-6 px-4">
+      &copy; 2026 SMA Islam Terpadu Al Ishlah Gorontalo &bull; Sistem Evaluasi Digital Terpadu
+    </footer>
+  </main>
+
+  <!-- =====================================================================
+       HALAMAN 2: RUANG UJIAN CBT (AKTIF)
+  ====================================================================== -->
+  <div id="view-exam" class="hidden flex-1 flex flex-col">
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-30 bg-white border-b border-slate-200 shadow-sm">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
+        <!-- Kiri: Logo & Judul -->
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 p-1.5 flex-shrink-0 flex items-center justify-center">
+            <img
+              src="https://iili.io/Ce8iqts.png"
+              alt="Logo"
+              class="w-full h-full object-contain"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <span style="display:none;" class="font-extrabold text-xs text-brand-700">SMAIT</span>
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+              ASAS Ganjil 2026/2027 &bull; <span id="header-subject-name" class="text-brand-700">Sejarah Indonesia</span>
+            </h2>
+            <p class="text-[11px] sm:text-xs text-slate-500 truncate">
+              Peserta: <span id="header-student-name" class="font-semibold text-slate-700">-</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Kanan: Badge Pelanggaran (jika > 0), Timer, & Tombol Navigasi Mobile -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div id="violation-badge" class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-bold" title="Jumlah perpindahan tab terdeteksi">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span id="violation-count-text">0x</span>
+          </div>
+
+          <!-- Countdown Timer -->
+          <div id="timer-box" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-800 font-mono font-bold text-sm sm:text-base transition-colors">
+            <svg class="w-4 h-4 text-brand-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="timer-display">60:00</span>
+          </div>
+
+          <!-- Tombol Daftar Soal (Khusus Layar Kecil) -->
+          <button
+            type="button"
+            id="btn-toggle-mobile-nav"
+            class="lg:hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            <span>Soal</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-7 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- Kolom Kiri: Area Butir Soal (8 kolom di desktop) -->
+      <section class="lg:col-span-8 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+        <!-- Header Kartu Soal -->
+        <div class="px-5 sm:px-7 py-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg bg-brand-700 text-white text-xs sm:text-sm font-extrabold">
+              Soal No. <span id="q-current-number" class="ml-1">1</span> <span class="font-normal opacity-80 ml-1">/ 25</span>
+            </span>
+            <span id="q-type-badge" class="inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
+              Pilihan Ganda
+            </span>
+          </div>
+          <div class="text-xs font-medium text-slate-500">
+            Terjawab: <span id="progress-counter-text" class="font-bold text-slate-800">0/25</span>
+          </div>
+        </div>
+
+        <!-- Isi Stimulus & Pertanyaan -->
+        <div class="p-5 sm:p-7 space-y-6 flex-1">
+          <!-- Kotak Stimulus -->
+          <div id="q-stimulus-box" class="bg-slate-50/90 border-l-4 border-brand-600 rounded-r-xl p-4 sm:p-5 text-slate-700 text-sm sm:text-[15px] leading-relaxed overflow-x-auto stimulus-content">
+            <!-- Stimulus diisi via JS -->
+          </div>
+
+          <!-- Teks Pertanyaan -->
+          <div id="q-question-text" class="text-slate-900 font-bold text-base sm:text-lg leading-snug">
+            <!-- Pertanyaan diisi via JS -->
+          </div>
+
+          <!-- Instruksi Spesifik Tipe Soal -->
+          <div id="q-instruction-hint" class="text-xs font-semibold text-brand-700 bg-brand-50/80 border border-brand-100 rounded-lg px-3.5 py-2 inline-block">
+            <!-- Petunjuk tipe soal -->
+          </div>
+
+          <!-- Area Pilihan Jawaban Dinamis -->
+          <div id="q-options-container" class="space-y-3 pt-1">
+            <!-- Opsi PG / PG Kompleks / Tabel Benar-Salah diisi via JS -->
+          </div>
+        </div>
+
+        <!-- Footer Navigasi Soal -->
+        <div class="px-5 sm:px-7 py-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <button
+            type="button"
+            id="btn-prev-q"
+            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none text-slate-700 font-bold text-sm transition"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>Sebelumnya</span>
+          </button>
+
+          <!-- Tombol Ragu-ragu -->
+          <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-100 hover:bg-amber-200/80 border border-amber-300 text-amber-900 font-bold text-sm cursor-pointer select-none transition">
+            <input type="checkbox" id="checkbox-ragu" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 border-amber-400" />
+            <span>Ragu-ragu</span>
+          </label>
+
+          <button
+            type="button"
+            id="btn-next-q"
+            class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white font-bold text-sm shadow-sm transition"
+          >
+            <span id="btn-next-label">Selanjutnya</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Kolom Kanan: Panel Navigasi Nomor Soal (4 kolom di desktop, drawer di mobile) -->
+      <aside id="nav-panel-backdrop" class="fixed inset-0 z-40 hidden lg:static lg:block lg:col-span-4 bg-slate-900/50 lg:bg-transparent backdrop-blur-xs lg:backdrop-blur-none">
+        <div id="nav-panel-drawer" class="fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] lg:static lg:w-full bg-white lg:rounded-2xl shadow-2xl lg:shadow-sm border-l lg:border border-slate-200 flex flex-col max-h-screen lg:max-h-none overflow-hidden">
+          <!-- Drawer Header (Mobile) -->
+          <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div>
+              <h3 class="font-extrabold text-slate-800 text-sm">Navigasi Nomor Soal</h3>
+              <p class="text-[11px] text-slate-500">Klik nomor untuk berpindah cepat</p>
+            </div>
+            <button type="button" id="btn-close-mobile-nav" class="lg:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Grid Nomor Soal 1 - 25 -->
+          <div class="p-5 overflow-y-auto flex-1">
+            <div id="question-nav-grid" class="grid grid-cols-5 gap-2.5">
+              <!-- Tombol 1..25 diisi via JS -->
+            </div>
+
+            <!-- Keterangan Warna Status -->
+            <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+              <div class="flex items-center gap-2.5">
+                <span class="w-4 h-4 rounded bg-emerald-600 inline-block flex-shrink-0"></span>
+                <span>Terjawab Lengkap (<strong id="legend-answered">0</strong>)</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <span class="w-4 h-4 rounded bg-amber-400 inline-block flex-shrink-0"></span>
+                <span>Ragu-ragu (<strong id="legend-flagged">0</strong>)</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <span class="w-4 h-4 rounded bg-slate-200 border border-slate-300 inline-block flex-shrink-0"></span>
+                <span>Belum Dijawab (<strong id="legend-unanswered">25</strong>)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol Kumpulkan Ujian -->
+          <div class="p-5 bg-slate-50 border-t border-slate-200">
+            <button
+              type="button"
+              id="btn-open-submit-modal"
+              class="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-sm shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 transition"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Kumpulkan Ujian</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       HALAMAN 3: BUKTI PENGUMPULAN UJIAN (TANPA MENAMPILKAN NILAI)
+  ====================================================================== -->
+  <main id="view-submitted" class="hidden flex-1 flex items-center justify-center p-4 py-10">
+    <div class="max-w-lg w-full bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden text-center">
+      <div class="islamic-pattern p-8 text-white">
+        <div class="mx-auto w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-300 flex items-center justify-center mb-4">
+          <svg class="w-11 h-11 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-extrabold tracking-tight">Alhamdulillah, Ujian Selesai!</h2>
+        <p class="text-brand-100 text-sm mt-1.5">
+          Jawaban Anda telah berhasil dikirim dan tersimpan di server sekolah.
+        </p>
+      </div>
+
+      <div class="p-6 sm:p-8 space-y-5 text-left">
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3 text-sm">
+          <div class="flex justify-between gap-2 border-b border-slate-200 pb-2.5">
+            <span class="text-slate-500">Satuan Pendidikan</span>
+            <span class="font-bold text-slate-800 text-right">SMAIT Al Ishlah Gorontalo</span>
+          </div>
+          <div class="flex justify-between gap-2 border-b border-slate-200 pb-2.5">
+            <span class="text-slate-500">Nama Peserta</span>
+            <span id="receipt-student" class="font-bold text-slate-900 text-right">-</span>
+          </div>
+          <div class="flex justify-between gap-2 border-b border-slate-200 pb-2.5">
+            <span class="text-slate-500">Mata Pelajaran</span>
+            <span id="receipt-subject" class="font-bold text-brand-700 text-right">-</span>
+          </div>
+          <div class="flex justify-between gap-2 border-b border-slate-200 pb-2.5">
+            <span class="text-slate-500">Waktu Selesai</span>
+            <span id="receipt-timestamp" class="font-semibold text-slate-800 text-right">-</span>
+          </div>
+          <div class="flex justify-between gap-2 border-b border-slate-200 pb-2.5">
+            <span class="text-slate-500">Durasi Pengerjaan</span>
+            <span id="receipt-duration" class="font-semibold text-slate-800 text-right">-</span>
+          </div>
+          <div class="flex justify-between gap-2">
+            <span class="text-slate-500">Status Server</span>
+            <span id="receipt-server-status" class="inline-flex items-center gap-1 font-bold text-emerald-700">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Tersimpan Sah
+            </span>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-900 leading-relaxed text-center">
+          Silakan menutup halaman ini atau serahkan perangkat kepada pengawas ruangan. Hasil penilaian akan diumumkan oleh guru mata pelajaran sesuai jadwal sekolah.
+        </div>
+
+        <button
+          type="button"
+          id="btn-back-to-login"
+          class="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm transition"
+        >
+          Kembali ke Halaman Awal
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- =====================================================================
+       SCRIPT LOGIKA CBT, BANK SOAL LENGKAP, SKORING & KONEKSI GAS
+  ====================================================================== -->
+  <script>
+    /**
+     * KONFIGURASI URL GOOGLE APPS SCRIPT (WEB APP)
+     * Ganti nilai konstanta di bawah ini dengan URL Web App GAS sekolah Anda.
+     */
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzXVDp_lpAriy5X-eMPX2TdGWJbjGzjl1v91_mBFDsaWlHwBGw_k1xr-rhlVcJ3y6uU/exec";
+
+    /**
+     * KONFIGURASI IDENTITAS & DURASI UJIAN
+     */
+    const EXAM_CONFIG = {
+      schoolName: "SMA Islam Terpadu Al Ishlah Gorontalo",
+      assessmentName: "Asesmen Sumatif Akhir Semester (ASAS) Ganjil 2026/2027",
+      classPhase: "Kelas XI / Fase F",
+      defaultSubject: "Sejarah Indonesia",
+      durationMinutes: 60,
+      storageSessionKey: "cbt_smait_alishlah_active_session_v1",
+      storageCompletedKey: "cbt_smait_alishlah_completed_exams_v1"
+    };
+
+    /**
+     * BANK SOAL LENGKAP (25 BUTIR SOAL + KUNCI JAWABAN & RUBRIK PENSKORAN)
+     * Diekstrak 100% utuh dari dokumen Soal_Sejarah_XI_Ganjil_SMAIT_Al_Ishlah.docx
+     * - No. 1–15 : Pilihan Ganda Tunggal (skor 3 per benar; maks 45)
+     * - No. 16–20: Pilihan Ganda Kompleks / 2 Jawaban (skor 5 jika 2 benar & 0 salah; skor 2 jika 1 benar & 0 salah; maks 25)
+     * - No. 21–25: Benar–Salah / 3 Pernyataan (skor 2 per pernyataan benar; maks 6 per nomor; maks 30)
+     * Total Skor Maksimal = 100
+     */
+    const QUESTION_BANK = [
+      // ==================== A. PILIHAN GANDA (1 - 15) ====================
+      {
+        id: 1,
+        type: "PG",
+        stimulus: `<p>Setelah Konstantinopel jatuh ke tangan Turki Usmani pada 1453, jalur perdagangan rempah melalui Laut Tengah dikuasai pedagang Muslim dan Venesia dengan harga tinggi. Bangsa Eropa Barat kemudian berlomba mencari jalur laut sendiri ke daerah penghasil rempah-rempah.</p>`,
+        question: "Motif utama pelayaran bangsa Eropa Barat ke Nusantara berdasarkan kutipan adalah ....",
+        options: [
+          { key: "A", text: "menyebarkan ilmu pengetahuan kepada penduduk lokal" },
+          { key: "B", text: "membantu raja Nusantara melawan kerajaan tetangga" },
+          { key: "C", text: "memperoleh rempah langsung dari daerah penghasilnya" },
+          { key: "D", text: "membangun sekolah modern bagi para bangsawan pribumi" },
+          { key: "E", text: "mengganti sistem pemerintahan kerajaan di Nusantara" }
+        ],
+        answerKey: "C",
+        maxScore: 3
+      },
+      {
+        id: 2,
+        type: "PG",
+        stimulus: `<p>QS Al-Muthaffifin (83): 1–3 mengecam orang yang curang dalam takaran dan timbangan: ketika menerima dari orang lain meminta dipenuhi, tetapi ketika menakar untuk orang lain mereka menguranginya. Pada masa VOC, penguasa dagang menetapkan harga beli rempah yang rendah dan menjual barang dagangannya dengan harga tinggi.</p>`,
+        question: "Praktik VOC yang bertentangan dengan pesan ayat tersebut adalah ....",
+        options: [
+          { key: "A", text: "menekan harga beli hasil bumi petani secara sepihak" },
+          { key: "B", text: "membayar hasil panen petani sesuai harga pasar" },
+          { key: "C", text: "membuka pasar bebas bagi seluruh pedagang lokal" },
+          { key: "D", text: "menyediakan irigasi gratis bagi lahan pertanian" },
+          { key: "E", text: "memberi kebebasan petani menjual rempah-rempahnya" }
+        ],
+        answerKey: "A",
+        maxScore: 3
+      },
+      {
+        id: 3,
+        type: "PG",
+        stimulus: `<p>QS Ar-Rum (30): 41 menyatakan bahwa telah tampak kerusakan di darat dan di laut akibat perbuatan tangan manusia. Pada masa Tanam Paksa, lahan pangan beralih menjadi kebun tanaman ekspor sehingga terjadi kelaparan di sejumlah daerah, sementara keuntungan mengalir ke negeri Belanda.</p>`,
+        question: "Penilaian paling tepat terhadap kebijakan tersebut berdasarkan ayat adalah ....",
+        options: [
+          { key: "A", text: "kelaparan terjadi murni karena bencana alam dan cuaca" },
+          { key: "B", text: "rakyat sendiri menjadi penyebab utama rusaknya lahan" },
+          { key: "C", text: "ayat tersebut hanya berbicara tentang kerusakan hutan" },
+          { key: "D", text: "kebijakan itu adil karena memberi untung besar negara" },
+          { key: "E", text: "penderitaan rakyat akibat keserakahan penguasa kolonial" }
+        ],
+        answerKey: "E",
+        maxScore: 3
+      },
+      {
+        id: 4,
+        type: "PG",
+        stimulus: `<p>Perang Padri (1821–1837) berawal dari pertentangan kaum adat dan kaum agama di Minangkabau. Setelah kaum adat meminta bantuan Belanda, perang berkembang menjadi perlawanan terhadap Belanda. Pemimpin perlawanan di Bonjol akhirnya ditangkap dan diasingkan.</p>`,
+        question: "Tokoh pemimpin perlawanan rakyat di Bonjol pada masa itu adalah ....",
+        options: [
+          { key: "A", text: "Pangeran Diponegoro" },
+          { key: "B", text: "Tuanku Imam Bonjol" },
+          { key: "C", text: "Pangeran Antasari" },
+          { key: "D", text: "Sultan Hasanuddin" },
+          { key: "E", text: "Sultan Iskandar Muda" }
+        ],
+        answerKey: "B",
+        maxScore: 3
+      },
+      {
+        id: 5,
+        type: "PG",
+        stimulus: `<p>Perlawanan di Aceh, Jawa, Bali, dan Maluku terjadi pada waktu dan tempat yang berbeda-beda tanpa koordinasi satu sama lain. Belanda memanfaatkan keadaan ini dengan politik adu domba (<em>devide et impera</em>).</p>`,
+        question: "Faktor utama yang membuat perlawanan-perlawanan tersebut dapat dipatahkan Belanda adalah ....",
+        options: [
+          { key: "A", text: "persenjataan rakyat lebih modern daripada milik Belanda" },
+          { key: "B", text: "seluruh raja Nusantara bersekutu dengan pihak penjajah" },
+          { key: "C", text: "rakyat tidak berkeinginan mengusir penjajah dari negerinya" },
+          { key: "D", text: "perlawanan bersifat kedaerahan dan kurang terkoordinasi" },
+          { key: "E", text: "pemerintah kolonial memiliki pasukan yang sangat sedikit" }
+        ],
+        answerKey: "D",
+        maxScore: 3
+      },
+      {
+        id: 6,
+        type: "PG",
+        stimulus: `<p>Pada Perang Aceh (1873–1904), para ulama seperti Teungku Chik di Tiro menggerakkan rakyat dengan semangat membela agama dan tanah air. QS An-Nisa (4): 75 menyerukan orang beriman agar membela kaum lemah, yaitu laki-laki, perempuan, dan anak-anak yang tertindas.</p>`,
+        question: "Motivasi utama perlawanan ulama Aceh yang sesuai dengan ayat tersebut adalah ....",
+        options: [
+          { key: "A", text: "merebut kekuasaan raja demi keuntungan pribadi semata" },
+          { key: "B", text: "memperoleh jabatan penting dalam pemerintahan Belanda" },
+          { key: "C", text: "membela rakyat yang tertindas dari kezaliman penjajah" },
+          { key: "D", text: "memperluas wilayah kerajaan dengan menaklukkan tetangga" },
+          { key: "E", text: "menguasai jalur dagang rempah-rempah di seluruh dunia" }
+        ],
+        answerKey: "C",
+        maxScore: 3
+      },
+      {
+        id: 7,
+        type: "PG",
+        stimulus: `<p>Sebuah organisasi didirikan KH Ahmad Dahlan di Yogyakarta pada 18 November 1912. Organisasi ini mendirikan sekolah, rumah sakit, dan panti asuhan sebagai wujud pembaruan Islam yang membawa kemaslahatan bagi umat.</p>`,
+        question: "Bidang gerakan utama organisasi tersebut pada masa awal berdirinya adalah ....",
+        options: [
+          { key: "A", text: "pendidikan, kesehatan, dan pembinaan sosial umat" },
+          { key: "B", text: "politik praktis dan perebutan kekuasaan negara" },
+          { key: "C", text: "perdagangan, pelayaran, dan jalur niaga batik" },
+          { key: "D", text: "kemiliteran dan pembentukan pasukan bersenjata" },
+          { key: "E", text: "kesenian, kebudayaan, dan adat istiadat Jawa" }
+        ],
+        answerKey: "A",
+        maxScore: 3
+      },
+      {
+        id: 8,
+        type: "PG",
+        stimulus: `
+          <p class="font-semibold mb-2">Tabel organisasi pergerakan nasional:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Organisasi</th>
+                <th>Tahun</th>
+                <th>Corak Gerakan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold">Budi Utomo</td>
+                <td>1908</td>
+                <td>Pendidikan dan kebudayaan</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Sarekat Islam</td>
+                <td>1912</td>
+                <td>Ekonomi dan politik berasas Islam</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Indische Partij</td>
+                <td>1912</td>
+                <td>Politik, menuntut kemerdekaan Hindia</td>
+              </tr>
+            </tbody>
+          </table>
+        `,
+        question: "Organisasi yang secara terbuka menuntut kemerdekaan Hindia sejak awal berdirinya adalah ....",
+        options: [
+          { key: "A", text: "Budi Utomo" },
+          { key: "B", text: "Sarekat Islam" },
+          { key: "C", text: "Muhammadiyah" },
+          { key: "D", text: "Jong Celebes" },
+          { key: "E", text: "Indische Partij" }
+        ],
+        answerKey: "E",
+        maxScore: 3
+      },
+      {
+        id: 9,
+        type: "PG",
+        stimulus: `<p>Kongres Pemuda II (27–28 Oktober 1928) dihadiri wakil Jong Java, Jong Sumatranen Bond, Jong Celebes, dan organisasi pemuda lain. Para pemuda mengikrarkan satu tanah air, satu bangsa, dan bahasa persatuan, tanpa membubarkan organisasi kedaerahan masing-masing.</p>`,
+        question: "Kesimpulan paling tepat tentang makna ikrar tersebut adalah ....",
+        options: [
+          { key: "A", text: "organisasi kedaerahan dihapus agar tercipta satu golongan" },
+          { key: "B", text: "persatuan nasional dibangun tanpa menghapus identitas daerah" },
+          { key: "C", text: "bahasa daerah dilarang digunakan dalam kehidupan sehari-hari" },
+          { key: "D", text: "pemuda meninggalkan perjuangan demi kepentingan daerahnya" },
+          { key: "E", text: "kemerdekaan akan tercapai tanpa perlu persatuan antardaerah" }
+        ],
+        answerKey: "B",
+        maxScore: 3
+      },
+      {
+        id: 10,
+        type: "PG",
+        stimulus: `<p>Pada masa pendudukan Jepang, banyak keluarga kehilangan anggota yang dipaksa menjadi romusha dan pangan semakin sulit. QS Al-Baqarah (2): 155–157 menyebut ujian berupa ketakutan, kelaparan, serta kekurangan harta, jiwa, dan buah-buahan, dan memberi kabar gembira bagi orang yang sabar.</p>`,
+        question: "Sikap sabar yang paling tepat dalam situasi tersebut adalah ....",
+        options: [
+          { key: "A", text: "menyerah kepada penguasa demi keselamatan pribadi" },
+          { key: "B", text: "melarikan diri dan meninggalkan keluarga sendiri" },
+          { key: "C", text: "menyalahkan takdir dan berhenti dari semua usaha" },
+          { key: "D", text: "tetap berikhtiar sambil bertawakal kepada Allah Swt." },
+          { key: "E", text: "membalas dengan kekerasan tanpa perhitungan matang" }
+        ],
+        answerKey: "D",
+        maxScore: 3
+      },
+      {
+        id: 11,
+        type: "PG",
+        stimulus: `<p>Pada Februari 1944, KH Zainal Mustafa memimpin para santri di Singaparna, Tasikmalaya, melawan Jepang setelah menolak <em>seikerei</em> dan penyerahan padi yang memberatkan rakyat. Perlawanan itu dipadamkan Jepang, tetapi kisahnya menjadi inspirasi keberanian rakyat.</p>`,
+        question: "Analisis yang paling tepat tentang makna perlawanan tersebut adalah ....",
+        options: [
+          { key: "A", text: "membantu penuh program Jepang tanpa mempertimbangkan akidah" },
+          { key: "B", text: "menghentikan kegiatan belajar demi menghindari tekanan Jepang" },
+          { key: "C", text: "menumbuhkan keberanian menolak kezaliman meski kalah senjata" },
+          { key: "D", text: "memisahkan diri dari masyarakat dan tidak peduli perjuangan" },
+          { key: "E", text: "menjadi pusat perdagangan hasil bumi bagi pemerintah Jepang" }
+        ],
+        answerKey: "C",
+        maxScore: 3
+      },
+      {
+        id: 12,
+        type: "PG",
+        stimulus: `<p>Pada 17 Agustus 1945 pukul 10.00 WIB, teks proklamasi dibacakan di Jalan Pegangsaan Timur 56, Jakarta. Teks itu telah diketik oleh seorang tokoh berdasarkan tulisan tangan Ir. Soekarno.</p>`,
+        question: "Tokoh yang mengetik naskah proklamasi tersebut adalah ....",
+        options: [
+          { key: "A", text: "Sayuti Melik" },
+          { key: "B", text: "Achmad Soebardjo" },
+          { key: "C", text: "Mohammad Hatta" },
+          { key: "D", text: "Laksamana Maeda" },
+          { key: "E", text: "Chairul Saleh" }
+        ],
+        answerKey: "A",
+        maxScore: 3
+      },
+      {
+        id: 13,
+        type: "PG",
+        stimulus: `
+          <p class="font-semibold mb-1.5">Peristiwa menjelang proklamasi kemerdekaan:</p>
+          <ol class="list-decimal pl-5 space-y-1">
+            <li>Penyusunan teks proklamasi di rumah Laksamana Maeda.</li>
+            <li>Peristiwa Rengasdengklok.</li>
+            <li>Pembacaan proklamasi di Jalan Pegangsaan Timur 56.</li>
+            <li>Pengetikan naskah proklamasi oleh Sayuti Melik.</li>
+          </ol>
+        `,
+        question: "Urutan peristiwa yang benar berdasarkan daftar tersebut adalah ....",
+        options: [
+          { key: "A", text: "1) – 2) – 3) – 4)" },
+          { key: "B", text: "2) – 1) – 3) – 4)" },
+          { key: "C", text: "1) – 2) – 4) – 3)" },
+          { key: "D", text: "2) – 4) – 1) – 3)" },
+          { key: "E", text: "2) – 1) – 4) – 3)" }
+        ],
+        answerKey: "E",
+        maxScore: 3
+      },
+      {
+        id: 14,
+        type: "PG",
+        stimulus: `<p>QS Ibrahim (14): 7 menjanjikan tambahan nikmat bagi hamba yang bersyukur. Setiap 17 Agustus, sekolah mengadakan upacara bendera dan berbagai lomba untuk memperingati kemerdekaan.</p>`,
+        question: "Wujud syukur atas nikmat kemerdekaan yang paling tepat bagi pelajar adalah ....",
+        options: [
+          { key: "A", text: "berbangga atas kemerdekaan tanpa melakukan apa pun" },
+          { key: "B", text: "belajar sungguh-sungguh, menjaga persatuan, dan berkarya" },
+          { key: "C", text: "menikmati kebebasan tanpa mengindahkan aturan sekolah" },
+          { key: "D", text: "membandingkan bangsa sendiri untuk menjelekkan negeri" },
+          { key: "E", text: "menunda tugas sambil menunggu pemerintah bertindak" }
+        ],
+        answerKey: "B",
+        maxScore: 3
+      },
+      {
+        id: 15,
+        type: "PG",
+        stimulus: `<p>Pada 18 Agustus 1945, PPKI bersidang di Jakarta. Sidang itu mengesahkan UUD 1945 serta memilih Ir. Soekarno sebagai Presiden dan Drs. Mohammad Hatta sebagai Wakil Presiden.</p>`,
+        question: "Hasil penting Sidang PPKI berdasarkan kutipan adalah ....",
+        options: [
+          { key: "A", text: "pembentukan BPUPKI dan penyusunan dasar negara" },
+          { key: "B", text: "penandatanganan perjanjian dengan pihak Belanda" },
+          { key: "C", text: "pembubaran pasukan Jepang di seluruh Nusantara" },
+          { key: "D", text: "pengesahan UUD 1945 dan pemilihan pemimpin negara" },
+          { key: "E", text: "pernyataan kemerdekaan kepada pemerintah Jepang" }
+        ],
+        answerKey: "D",
+        maxScore: 3
+      },
+
+      // ==================== B. PILIHAN GANDA KOMPLEKS (16 - 20) ====================
+      {
+        id: 16,
+        type: "PGK",
+        stimulus: `
+          <p class="font-semibold mb-2">Tabel kebijakan kolonial:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Kebijakan</th>
+                <th>Isi Pokok</th>
+                <th>Periode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold">Monopoli VOC</td>
+                <td>Hak dagang tunggal atas rempah</td>
+                <td>Abad ke-17 s.d. ke-18</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Tanam Paksa</td>
+                <td>Seperlima lahan desa untuk tanaman ekspor</td>
+                <td>1830–1870</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Politik Etis</td>
+                <td>Irigasi, edukasi, dan emigrasi</td>
+                <td>Awal abad ke-20</td>
+              </tr>
+            </tbody>
+          </table>
+        `,
+        question: "Pilihlah dua pernyataan yang sesuai dengan tabel!",
+        options: [
+          { key: "A", text: "VOC menguasai perdagangan rempah lewat hak dagang tunggal" },
+          { key: "B", text: "Tanam Paksa mewajibkan desa menyerahkan seperlima lahannya" },
+          { key: "C", text: "Politik Etis sudah berlaku sebelum Tanam Paksa diterapkan" },
+          { key: "D", text: "Politik Etis berfokus pada perluasan monopoli dagang rempah" },
+          { key: "E", text: "Tanam Paksa diberlakukan pada masa kekuasaan VOC di Jawa" }
+        ],
+        answerKey: ["A", "B"],
+        maxScore: 5
+      },
+      {
+        id: 17,
+        type: "PGK",
+        stimulus: `<p>Perang Diponegoro (1825–1830) dipimpin Pangeran Diponegoro, bangsawan yang dekat dengan ulama dan santri. Perlawanan dipicu pemasangan patok jalan di tanah makam leluhur di Tegalrejo serta beban pajak yang memberatkan rakyat. QS Al-Hajj (22): 39 mengizinkan orang yang diperangi untuk membela diri karena mereka dizalimi.</p>`,
+        question: "Pilihlah dua pernyataan yang sesuai dengan kutipan!",
+        options: [
+          { key: "A", text: "Diponegoro berjuang untuk mempertahankan jabatan kolonial" },
+          { key: "B", text: "Perlawanan dipicu perlakuan zalim terhadap rakyat dan leluhur" },
+          { key: "C", text: "Ayat itu memerintahkan menyerang pihak yang tidak memusuhi" },
+          { key: "D", text: "Semangat jihad membela diri menjadi dasar motivasi pasukan" },
+          { key: "E", text: "Perlawanan terjadi karena rakyat menolak membayar utang" }
+        ],
+        answerKey: ["B", "D"],
+        maxScore: 5
+      },
+      {
+        id: 18,
+        type: "PGK",
+        stimulus: `
+          <p class="font-semibold mb-2">Tabel organisasi pergerakan nasional:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Organisasi</th>
+                <th>Tahun</th>
+                <th>Keanggotaan</th>
+                <th>Tujuan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold">Budi Utomo</td>
+                <td>1908</td>
+                <td>Pelajar dan priyayi Jawa</td>
+                <td>Pendidikan dan kebudayaan</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Sarekat Islam</td>
+                <td>1912</td>
+                <td>Rakyat luas, berasas Islam</td>
+                <td>Ekonomi lalu politik</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">PNI</td>
+                <td>1927</td>
+                <td>Kaum terpelajar dan rakyat</td>
+                <td>Indonesia merdeka melalui nonkooperasi</td>
+              </tr>
+            </tbody>
+          </table>
+        `,
+        question: "Pilihlah dua kesimpulan yang tepat berdasarkan tabel!",
+        options: [
+          { key: "A", text: "Corak gerakan bergeser dari sosial-budaya menuju politik" },
+          { key: "B", text: "Semua organisasi pada tabel sejak awal menuntut merdeka penuh" },
+          { key: "C", text: "Sarekat Islam bersifat kooperatif dan hanya fokus pendidikan" },
+          { key: "D", text: "Budi Utomo memiliki anggota paling beragam dibanding lainnya" },
+          { key: "E", text: "Basis keanggotaan meluas dari kalangan terbatas ke rakyat" }
+        ],
+        answerKey: ["A", "E"],
+        maxScore: 5
+      },
+      {
+        id: 19,
+        type: "PGK",
+        stimulus: `
+          <p>Allah menguji manusia dengan ketakutan, kelaparan, dan kekurangan harta, jiwa, serta buah-buahan (QS Al-Baqarah: 155). Tabel dampak pendudukan Jepang:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Bidang</th>
+                <th>Kebijakan</th>
+                <th>Dampak</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-semibold">Ekonomi</td>
+                <td>Penyerahan padi wajib</td>
+                <td>Kelangkaan pangan</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Sosial</td>
+                <td>Pengerahan romusha</td>
+                <td>Penderitaan dan korban jiwa</td>
+              </tr>
+              <tr>
+                <td class="font-semibold">Militer</td>
+                <td>Pembentukan PETA dan Heiho</td>
+                <td>Pengalaman militer pemuda</td>
+              </tr>
+            </tbody>
+          </table>
+        `,
+        question: "Pilihlah dua pernyataan yang tepat berdasarkan stimulus!",
+        options: [
+          { key: "A", text: "Pembentukan PETA semata-mata bertujuan memerdekakan Indonesia" },
+          { key: "B", text: "Sabar berarti menyerah tanpa usaha dalam menghadapi ujian" },
+          { key: "C", text: "Penyerahan padi wajib memperparah kelangkaan pangan rakyat" },
+          { key: "D", text: "Romusha mengurangi tenaga produktif desa dan menimbulkan derita" },
+          { key: "E", text: "Dampak pendudukan Jepang hanya terasa pada bidang militer" }
+        ],
+        answerKey: ["C", "D"],
+        maxScore: 5
+      },
+      {
+        id: 20,
+        type: "PGK",
+        stimulus: `<p>Masyarakat Gorontalo memegang falsafah “<em>adati hulo-hulo’a to syara’a, syara’a hulo-hulo’a to Kuru’ani</em>” (adat bersendikan syariat, syariat bersendikan Al-Qur’an). Pada 23 Januari 1942, rakyat Gorontalo di bawah Nani Wartabone menahan pejabat Belanda dan mengibarkan Merah Putih, lebih dulu daripada proklamasi 17 Agustus 1945.</p>`,
+        question: "Pilihlah dua pernyataan yang tepat berdasarkan kutipan!",
+        options: [
+          { key: "A", text: "Semangat merdeka sudah tumbuh di daerah sebelum proklamasi" },
+          { key: "B", text: "Peristiwa Gorontalo menggantikan peran Proklamasi 17 Agustus" },
+          { key: "C", text: "Jepang mengakui secara resmi kemerdekaan Gorontalo pada 1942" },
+          { key: "D", text: "Kemerdekaan Indonesia adalah hasil sumbangsih banyak daerah" },
+          { key: "E", text: "Perjuangan kemerdekaan hanya berlangsung di Pulau Jawa saja" }
+        ],
+        answerKey: ["A", "D"],
+        maxScore: 5
+      },
+
+      // ==================== C. BENAR - SALAH (21 - 25) ====================
+      {
+        id: 21,
+        type: "BS",
+        stimulus: `<p>QS An-Nahl (16): 90 memerintahkan berlaku adil dan melarang kekejian serta kezaliman. Pada masa Tanam Paksa, rakyat wajib menyerahkan hasil bumi dengan imbalan kecil, sedangkan pada masa Politik Etis dibuka sekolah bagi pribumi meski jumlahnya terbatas.</p>`,
+        question: "Tentukan Benar atau Salah untuk setiap pernyataan berikut!",
+        statements: [
+          { text: "Penyerahan hasil bumi dengan imbalan kecil sejalan dengan perintah berlaku adil", answer: "Salah" },
+          { text: "Kerja paksa dan penyerahan hasil bumi sepihak termasuk bentuk kezaliman", answer: "Benar" },
+          { text: "Pembukaan sekolah pada masa Politik Etis memberi peluang kemajuan bagi pribumi", answer: "Benar" }
+        ],
+        maxScore: 6
+      },
+      {
+        id: 22,
+        type: "BS",
+        stimulus: `<p>Perjanjian Bongaya (1667) mengakhiri Perang Makassar. Gowa di bawah Sultan Hasanuddin mengakui monopoli VOC, mengusir pedagang Portugis dan Inggris dari Makassar, menyerahkan sebagian wilayah, serta membayar ganti rugi perang.</p>`,
+        question: "Tentukan Benar atau Salah untuk setiap pernyataan berikut!",
+        statements: [
+          { text: "Perjanjian tersebut menguntungkan Gowa karena Makassar menguasai perdagangan rempah", answer: "Salah" },
+          { text: "Setelah perjanjian, pedagang Portugis dan Inggris tidak lagi bebas berdagang di Makassar", answer: "Benar" },
+          { text: "Perjanjian ditandatangani setelah VOC mengalami kekalahan telak dari Gowa", answer: "Salah" }
+        ],
+        maxScore: 6
+      },
+      {
+        id: 23,
+        type: "BS",
+        stimulus: `<p>Kongres Pemuda II (27–28 Oktober 1928) di Batavia menghasilkan ikrar: bertumpah darah satu, berbangsa satu, dan menjunjung bahasa persatuan, bahasa Indonesia. Para pemuda dari berbagai organisasi kedaerahan hadir dalam kongres tersebut. QS Al-Hujurat (49): 13 menegaskan bahwa manusia diciptakan berbangsa-bangsa dan bersuku-suku agar saling mengenal.</p>`,
+        question: "Tentukan Benar atau Salah untuk setiap pernyataan berikut!",
+        statements: [
+          { text: "Ikrar Sumpah Pemuda diucapkan pada Kongres Pemuda I tahun 1926", answer: "Salah" },
+          { text: "Ikrar Sumpah Pemuda memuat tiga hal pokok: tanah air, bangsa, dan bahasa persatuan", answer: "Benar" },
+          { text: "QS Al-Hujurat: 13 menuntut seluruh perbedaan suku dihapuskan demi persatuan", answer: "Salah" }
+        ],
+        maxScore: 6
+      },
+      {
+        id: 24,
+        type: "BS",
+        stimulus: `<p>Jepang membentuk Masyumi (1943) untuk menghimpun umat Islam dan Hizbullah (1944) sebagai pasukan pemuda Islam. Jepang membutuhkan dukungan rakyat dalam perang, tetapi anggota Hizbullah memperoleh latihan militer dan pengalaman organisasi.</p>`,
+        question: "Tentukan Benar atau Salah untuk setiap pernyataan berikut!",
+        statements: [
+          { text: "Jepang membentuk Masyumi untuk menghimpun kekuatan umat Islam", answer: "Benar" },
+          { text: "Hizbullah dibentuk sebagai pasukan pemuda Islam pada masa pendudukan Jepang", answer: "Benar" },
+          { text: "Pembentukan organisasi Islam oleh Jepang tidak berkaitan dengan kepentingan perang", answer: "Salah" }
+        ],
+        maxScore: 6
+      },
+      {
+        id: 25,
+        type: "BS",
+        stimulus: `<p>Setelah Jepang menyerah (15 Agustus 1945), golongan muda mendesak proklamasi segera, sedangkan golongan tua ingin membahasnya lebih dulu melalui PPKI. Perbedaan ini diselesaikan dengan perundingan, sejalan dengan QS Asy-Syura (42): 38 yang memuji urusan yang diputuskan melalui musyawarah.</p>`,
+        question: "Tentukan Benar atau Salah untuk setiap pernyataan berikut!",
+        statements: [
+          { text: "Golongan muda menginginkan proklamasi segera tanpa menunggu PPKI", answer: "Benar" },
+          { text: "Penyelesaian melalui perundingan sejalan dengan nilai musyawarah dalam Islam", answer: "Benar" },
+          { text: "Teks proklamasi dibacakan di rumah Laksamana Maeda", answer: "Salah" }
+        ],
+        maxScore: 6
+      }
+    ];
+
+    /**
+     * STATE APLIKASI GLOBAL
+     */
+    const appState = {
+      studentsList: [],
+      subjectsList: ["Sejarah Indonesia"],
+      serverCompletedRecords: [], // Daftar { nama, mapel } dari GAS jika tersedia
+      session: null, // Menyimpan data sesi ujian aktif
+      timerInterval: null,
+      isSubmitting: false
+    };
+
+    /**
+     * =====================================================================
+     * UTILITAS UI (LOADER & CUSTOM MODAL - TANPA ALERT/CONFIRM BAWAAN)
+     * =====================================================================
+     */
+    function showLoader(title = "Memuat Data...", subtitle = "Mohon tunggu sebentar...") {
+      document.getElementById("loader-title").textContent = title;
+      document.getElementById("loader-subtitle").textContent = subtitle;
+      document.getElementById("global-loader").classList.remove("hidden");
+    }
+
+    function hideLoader() {
+      document.getElementById("global-loader").classList.add("hidden");
+    }
+
+    function showModal({ type = "info", title, bodyHtml, buttons = [] }) {
+      const modal = document.getElementById("custom-modal");
+      const headerBar = document.getElementById("modal-header-bar");
+      const iconWrapper = document.getElementById("modal-icon-wrapper");
+      const titleEl = document.getElementById("modal-title");
+      const bodyEl = document.getElementById("modal-body");
+      const actionsEl = document.getElementById("modal-actions");
+
+      titleEl.textContent = title;
+      bodyEl.innerHTML = bodyHtml;
+      actionsEl.innerHTML = "";
+
+      if (type === "warning") {
+        headerBar.className = "h-2 bg-amber-500";
+        iconWrapper.className = "flex-shrink-0 w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center";
+        iconWrapper.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+      } else if (type === "danger") {
+        headerBar.className = "h-2 bg-red-600";
+        iconWrapper.className = "flex-shrink-0 w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center";
+        iconWrapper.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+      } else {
+        headerBar.className = "h-2 bg-brand-600";
+        iconWrapper.className = "flex-shrink-0 w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center";
+        iconWrapper.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+      }
+
+      buttons.forEach((btn) => {
+        const buttonEl = document.createElement("button");
+        buttonEl.type = "button";
+        buttonEl.textContent = btn.label;
+        buttonEl.className = btn.primary
+          ? "px-4 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white font-bold text-sm shadow-sm transition"
+          : btn.danger
+          ? "px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-sm transition"
+          : "px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition";
+        buttonEl.addEventListener("click", () => {
+          closeModal();
+          if (typeof btn.onClick === "function") btn.onClick();
+        });
+        actionsEl.appendChild(buttonEl);
+      });
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("custom-modal").classList.add("hidden");
+    }
+
+    /**
+     * =====================================================================
+     * KONEKSI GOOGLE APPS SCRIPT (FETCH GET & POST)
+     * =====================================================================
+     */
+    function setGasBanner(type, message, showRetry = false) {
+      const banner = document.getElementById("gas-status-banner");
+      const icon = document.getElementById("gas-status-icon");
+      const text = document.getElementById("gas-status-text");
+      const retryBtn = document.getElementById("btn-retry-fetch");
+
+      banner.classList.remove("hidden", "bg-amber-50", "border-amber-200", "text-amber-800", "bg-red-50", "border-red-200", "text-red-800", "bg-emerald-50", "border-emerald-200", "text-emerald-800");
+
+      if (type === "error") {
+        banner.classList.add("bg-red-50", "border-red-200", "text-red-800");
+        icon.innerHTML = `<svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+      } else if (type === "warning") {
+        banner.classList.add("bg-amber-50", "border-amber-200", "text-amber-800");
+        icon.innerHTML = `<svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
+      } else {
+        banner.classList.add("bg-emerald-50", "border-emerald-200", "text-emerald-800");
+        icon.innerHTML = `<svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+      }
+
+      text.innerHTML = message;
+      if (showRetry) {
+        retryBtn.classList.remove("hidden");
+      } else {
+        retryBtn.classList.add("hidden");
+      }
+    }
+
+    async function fetchInitialDataFromGAS() {
+      // Jika GAS_URL masih placeholder, tampilkan informasi sopan dan sediakan daftar uji coba agar aplikasi langsung bisa dites
+      if (!GAS_URL || GAS_URL === "MASUKKAN_URL_WEB_APP_GAS_DI_SINI") {
+        appState.studentsList = [
+          "Ahmad Fauzan Al-Ghifari (XI-A)",
+          "Aisyah Humaira Putri (XI-A)",
+          "Fatimah Az-Zahra (XI-A)",
+          "Muhammad Rizky Pratama (XI-B)",
+          "Nabila Khairunnisa (XI-B)",
+          "Zaidan Abdurrahman (XI-B)"
+        ];
+        appState.subjectsList = ["Sejarah Indonesia"];
+        populateSubjectsDropdown();
+        renderStudentDropdownOptions("");
+        setGasBanner(
+          "warning",
+          "<strong>Mode Pratinjau Lokal:</strong> Konstanta <code>GAS_URL</code> belum diisi URL Google Apps Script. Daftar siswa contoh dimuat agar aplikasi dapat langsung diuji.",
+          false
+        );
+        return;
+      }
+
+      showLoader(
+        "Mengambil Data Peserta...",
+        "Sedang memuat daftar nama siswa dan mata pelajaran dari server SMAIT Al Ishlah Gorontalo."
+      );
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "GET",
+          redirect: "follow"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Mendukung berbagai struktur JSON umum dari Google Apps Script
+        const rawStudents = data.siswa || data.students || data.namaSiswa || [];
+        const rawSubjects = data.mapel || data.subjects || data.mataPelajaran || ["Sejarah Indonesia"];
+        const rawSubmitted = data.sudahUjian || data.submitted || data.riwayat || [];
+
+        appState.studentsList = rawStudents
+          .map((item) => (typeof item === "string" ? item.trim() : (item.nama || item.name || "").trim()))
+          .filter(Boolean);
+
+        const parsedSubjects = rawSubjects
+          .map((item) => (typeof item === "string" ? item.trim() : (item.mapel || item.subject || item.nama || "").trim()))
+          .filter(Boolean);
+
+        appState.subjectsList = parsedSubjects.length > 0 ? parsedSubjects : ["Sejarah Indonesia"];
+
+        if (Array.isArray(rawSubmitted)) {
+          appState.serverCompletedRecords = rawSubmitted.map((r) => ({
+            nama: String(r.nama || r.namaSiswa || "").trim().toLowerCase(),
+            mapel: String(r.mapel || r.mataPelajaran || "").trim().toLowerCase()
+          }));
+        }
+
+        populateSubjectsDropdown();
+        renderStudentDropdownOptions("");
+        setGasBanner(
+          "success",
+          `Terhubung ke server sekolah. Berhasil memuat <strong>${appState.studentsList.length} nama peserta</strong>.`,
+          false
+        );
+      } catch (error) {
+        console.error("Gagal mengambil data dari GAS:", error);
+        setGasBanner(
+          "error",
+          "Gagal memuat daftar siswa dari server sekolah. Pastikan koneksi internet stabil dan Web App GAS sudah di-deploy dengan akses <em>Anyone</em>.",
+          true
+        );
+      } finally {
+        hideLoader();
+      }
+    }
+
+    /**
+     * =====================================================================
+     * DROPDOWN PENCARIAN NAMA SISWA & MATA PELAJARAN
+     * =====================================================================
+     */
+    function populateSubjectsDropdown() {
+      const selectEl = document.getElementById("subject-select");
+      selectEl.innerHTML = "";
+      appState.subjectsList.forEach((subj) => {
+        const opt = document.createElement("option");
+        opt.value = subj;
+        opt.textContent = subj;
+        if (subj.toLowerCase().includes("sejarah")) {
+          opt.selected = true;
+        }
+        selectEl.appendChild(opt);
+      });
+    }
+
+    function renderStudentDropdownOptions(keyword = "") {
+      const listEl = document.getElementById("student-dropdown-list");
+      const query = keyword.trim().toLowerCase();
+      const filtered = appState.studentsList.filter((name) =>
+        name.toLowerCase().includes(query)
+      );
+
+      listEl.innerHTML = "";
+
+      if (filtered.length === 0) {
+        const emptyItem = document.createElement("div");
+        emptyItem.className = "px-4 py-3 text-xs text-slate-500 italic text-center";
+        emptyItem.textContent = appState.studentsList.length === 0
+          ? "Daftar siswa belum tersedia."
+          : `Nama "${keyword}" tidak ditemukan.`;
+        listEl.appendChild(emptyItem);
+        return;
+      }
+
+      filtered.forEach((studentName) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-800 font-medium transition flex items-center justify-between";
+        btn.innerHTML = `<span>${escapeHtml(studentName)}</span>`;
+        btn.addEventListener("click", () => {
+          selectStudent(studentName);
+        });
+        listEl.appendChild(btn);
+      });
+    }
+
+    function selectStudent(name) {
+      const inputEl = document.getElementById("student-search-input");
+      const hiddenEl = document.getElementById("selected-student-value");
+      const clearBtn = document.getElementById("btn-clear-student");
+      const listEl = document.getElementById("student-dropdown-list");
+
+      inputEl.value = name;
+      hiddenEl.value = name;
+      clearBtn.classList.remove("hidden");
+      listEl.classList.add("hidden");
+    }
+
+    function setupStudentSearchEvents() {
+      const inputEl = document.getElementById("student-search-input");
+      const hiddenEl = document.getElementById("selected-student-value");
+      const clearBtn = document.getElementById("btn-clear-student");
+      const listEl = document.getElementById("student-dropdown-list");
+      const container = document.getElementById("student-dropdown-container");
+
+      inputEl.addEventListener("focus", () => {
+        renderStudentDropdownOptions(inputEl.value);
+        listEl.classList.remove("hidden");
+      });
+
+      inputEl.addEventListener("input", () => {
+        // Reset pilihan valid jika user mengubah teks
+        const exactMatch = appState.studentsList.find(
+          (s) => s.toLowerCase() === inputEl.value.trim().toLowerCase()
+        );
+        hiddenEl.value = exactMatch || "";
+
+        if (inputEl.value.length > 0) {
+          clearBtn.classList.remove("hidden");
+        } else {
+          clearBtn.classList.add("hidden");
+        }
+
+        renderStudentDropdownOptions(inputEl.value);
+        listEl.classList.remove("hidden");
+      });
+
+      clearBtn.addEventListener("click", () => {
+        inputEl.value = "";
+        hiddenEl.value = "";
+        clearBtn.classList.add("hidden");
+        renderStudentDropdownOptions("");
+        listEl.classList.remove("hidden");
+        inputEl.focus();
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!container.contains(e.target)) {
+          listEl.classList.add("hidden");
+        }
+      });
+    }
+
+    /**
+     * =====================================================================
+     * VALIDASI RIWAYAT PENGERJAAN & LOCALSTORAGE
+     * =====================================================================
+     */
+    function getLocalCompletedExams() {
+      try {
+        const raw = localStorage.getItem(EXAM_CONFIG.storageCompletedKey);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function markExamAsCompletedLocally(studentName, subjectName, receiptData) {
+      try {
+        const list = getLocalCompletedExams();
+        list.push({
+          nama: studentName.trim().toLowerCase(),
+          mapel: subjectName.trim().toLowerCase(),
+          receipt: receiptData
+        });
+        localStorage.setItem(EXAM_CONFIG.storageCompletedKey, JSON.stringify(list));
+      } catch (e) {
+        console.warn("Gagal menyimpan status selesai ke localStorage:", e);
+      }
+    }
+
+    function hasAlreadySubmitted(studentName, subjectName) {
+      const normName = studentName.trim().toLowerCase();
+      const normSubj = subjectName.trim().toLowerCase();
+
+      const inLocal = getLocalCompletedExams().some(
+        (item) => item.nama === normName && item.mapel === normSubj
+      );
+      const inServer = appState.serverCompletedRecords.some(
+        (item) => item.nama === normName && item.mapel === normSubj
+      );
+
+      return inLocal || inServer;
+    }
+
+    function saveActiveSessionToStorage() {
+      if (!appState.session) return;
+      try {
+        localStorage.setItem(EXAM_CONFIG.storageSessionKey, JSON.stringify(appState.session));
+      } catch (e) {
+        console.warn("Gagal menyimpan progres ujian:", e);
+      }
+    }
+
+    function clearActiveSessionFromStorage() {
+      try {
+        localStorage.removeItem(EXAM_CONFIG.storageSessionKey);
+      } catch (e) {
+        console.warn("Gagal menghapus sesi aktif:", e);
+      }
+    }
+
+    function loadSavedSessionFromStorage() {
+      try {
+        const raw = localStorage.getItem(EXAM_CONFIG.storageSessionKey);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    /**
+     * =====================================================================
+     * PENGACAKAN SOAL (FISHER-YATES) & MANAJEMEN SESI UJIAN
+     * =====================================================================
+     */
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startNewExamSession(studentName, subjectName) {
+      const shuffledIds = shuffleArray(QUESTION_BANK.map((q) => q.id));
+
+      appState.session = {
+        studentName,
+        subjectName,
+        questionOrder: shuffledIds,
+        currentIndex: 0,
+        answers: {}, // { [questionId]: "A" | ["A","B"] | ["Benar","Salah","Benar"] }
+        flagged: {}, // { [questionId]: true }
+        remainingSeconds: EXAM_CONFIG.durationMinutes * 60,
+        startedAt: new Date().toISOString(),
+        tabSwitchCount: 0
+      };
+
+      saveActiveSessionToStorage();
+      enterExamRoom();
+    }
+
+    function resumeSavedExamSession(savedSession) {
+      appState.session = savedSession;
+      enterExamRoom();
+    }
+
+    function enterExamRoom() {
+      document.getElementById("view-login").classList.add("hidden");
+      document.getElementById("view-submitted").classList.add("hidden");
+      document.getElementById("view-exam").classList.remove("hidden");
+
+      document.getElementById("header-student-name").textContent = appState.session.studentName;
+      document.getElementById("header-subject-name").textContent = appState.session.subjectName;
+      updateViolationBadgeUI();
+
+      renderQuestionNavGrid();
+      renderCurrentQuestion();
+      startCountdownTimer();
+    }
+
+    /**
+     * =====================================================================
+     * TIMER HITUNG MUNDUR & AUTO-SUBMIT
+     * =====================================================================
+     */
+    function startCountdownTimer() {
+      if (appState.timerInterval) clearInterval(appState.timerInterval);
+
+      updateTimerDisplay();
+
+      appState.timerInterval = setInterval(() => {
+        if (!appState.session || appState.isSubmitting) return;
+
+        appState.session.remainingSeconds -= 1;
+
+        if (appState.session.remainingSeconds <= 0) {
+          appState.session.remainingSeconds = 0;
+          updateTimerDisplay();
+          clearInterval(appState.timerInterval);
+          submitExam(true); // Kumpulkan otomatis saat waktu habis
+          return;
+        }
+
+        updateTimerDisplay();
+        saveActiveSessionToStorage();
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const totalSec = Math.max(0, appState.session.remainingSeconds);
+      const mins = Math.floor(totalSec / 60);
+      const secs = totalSec % 60;
+      const formatted = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+      const displayEl = document.getElementById("timer-display");
+      const boxEl = document.getElementById("timer-box");
+      displayEl.textContent = formatted;
+
+      boxEl.classList.remove("bg-brand-50", "border-brand-200", "text-brand-800", "bg-amber-50", "border-amber-300", "text-amber-800", "bg-red-600", "border-red-700", "text-white", "timer-urgent");
+
+      if (totalSec <= 180) {
+        // Kurang dari 3 menit: merah mendesak
+        boxEl.classList.add("bg-red-600", "border-red-700", "text-white", "timer-urgent");
+      } else if (totalSec <= 600) {
+        // Kurang dari 10 menit: kuning peringatan
+        boxEl.classList.add("bg-amber-50", "border-amber-300", "text-amber-800");
+      } else {
+        boxEl.classList.add("bg-brand-50", "border-brand-200", "text-brand-800");
+      }
+    }
+
+    /**
+     * =====================================================================
+     * FITUR ANTI-CURANG (VISIBILITYCHANGE DETECTION)
+     * =====================================================================
+     */
+    function updateViolationBadgeUI() {
+      if (!appState.session) return;
+      const count = appState.session.tabSwitchCount || 0;
+      const badge = document.getElementById("violation-badge");
+      const text = document.getElementById("violation-count-text");
+
+      if (count > 0) {
+        badge.classList.remove("hidden");
+        badge.classList.add("flex");
+        text.textContent = `${count}x Pindah Tab`;
+      } else {
+        badge.classList.add("hidden");
+      }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (!appState.session || appState.isSubmitting) return;
+      const isExamVisible = !document.getElementById("view-exam").classList.contains("hidden");
+      if (!isExamVisible) return;
+
+      if (document.hidden) {
+        appState.session.tabSwitchCount = (appState.session.tabSwitchCount || 0) + 1;
+        saveActiveSessionToStorage();
+        updateViolationBadgeUI();
+      } else {
+        // Ketika siswa kembali ke tab ujian, tampilkan peringatan sopan
+        const count = appState.session.tabSwitchCount;
+        showModal({
+          type: "warning",
+          title: "Peringatan Pengawasan Ujian",
+          bodyHtml: `
+            <p>Anda terdeteksi meninggalkan halaman atau berpindah tab/aplikasi saat ujian berlangsung.</p>
+            <p class="font-semibold text-amber-800 bg-amber-50 p-3 rounded-xl border border-amber-200">
+              Catatan Pelanggaran: <strong>${count} kali</strong> berpindah layar. Aktivitas ini tercatat otomatis dan akan dikirimkan ke laporan guru pengawas.
+            </p>
+            <p class="text-xs text-slate-500">Mohon tetap fokus pada layar ujian hingga selesai. Semoga Allah Swt. memudahkan langkah Anda.</p>
+          `,
+          buttons: [
+            {
+              label: "Saya Mengerti & Lanjutkan Ujian",
+              primary: true
+            }
+          ]
+        });
+      }
+    });
+
+    /**
+     * =====================================================================
+     * RENDER SOAL & NAVIGASI NOMOR SOAL
+     * =====================================================================
+     */
+    function getQuestionByOrderIndex(index) {
+      const qId = appState.session.questionOrder[index];
+      return QUESTION_BANK.find((q) => q.id === qId);
+    }
+
+    function isQuestionAnswered(question) {
+      const ans = appState.session.answers[question.id];
+      if (!ans) return false;
+
+      if (question.type === "PG") {
+        return typeof ans === "string" && ans.length > 0;
+      }
+      if (question.type === "PGK") {
+        return Array.isArray(ans) && ans.length > 0;
+      }
+      if (question.type === "BS") {
+        // Dianggap terjawab lengkap jika semua 3 pernyataan telah dipilih Benar/Salah
+        return (
+          Array.isArray(ans) &&
+          ans.length === question.statements.length &&
+          ans.every((val) => val === "Benar" || val === "Salah")
+        );
+      }
+      return false;
+    }
+
+    function renderCurrentQuestion() {
+      const idx = appState.session.currentIndex;
+      const question = getQuestionByOrderIndex(idx);
+      const total = appState.session.questionOrder.length;
+
+      document.getElementById("q-current-number").textContent = idx + 1;
+      document.getElementById("q-stimulus-box").innerHTML = question.stimulus;
+      document.getElementById("q-question-text").textContent = question.question;
+
+      // Badge & instruksi tipe soal
+      const badgeEl = document.getElementById("q-type-badge");
+      const hintEl = document.getElementById("q-instruction-hint");
+
+      if (question.type === "PG") {
+        badgeEl.textContent = "Pilihan Ganda";
+        badgeEl.className = "inline-flex items-center px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold";
+        hintEl.textContent = "Petunjuk: Pilih satu jawaban yang paling tepat.";
+      } else if (question.type === "PGK") {
+        badgeEl.textContent = "Pilihan Ganda Kompleks";
+        badgeEl.className = "inline-flex items-center px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 text-xs font-bold";
+        hintEl.textContent = "Petunjuk: Pilih DUA jawaban yang benar (centang dua kotak pilihan).";
+      } else if (question.type === "BS") {
+        badgeEl.textContent = "Benar – Salah";
+        badgeEl.className = "inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-xs font-bold";
+        hintEl.textContent = "Petunjuk: Tentukan Benar atau Salah untuk setiap pernyataan di bawah ini.";
+      }
+
+      // Render opsi jawaban sesuai tipe soal
+      const container = document.getElementById("q-options-container");
+      container.innerHTML = "";
+
+      if (question.type === "PG") {
+        renderSingleChoiceOptions(question, container);
+      } else if (question.type === "PGK") {
+        renderMultipleChoiceOptions(question, container);
+      } else if (question.type === "BS") {
+        renderTrueFalseMatrix(question, container);
+      }
+
+      // Status Ragu-ragu
+      const raguCheckbox = document.getElementById("checkbox-ragu");
+      raguCheckbox.checked = Boolean(appState.session.flagged[question.id]);
+
+      // Tombol Sebelumnya & Selanjutnya
+      document.getElementById("btn-prev-q").disabled = idx === 0;
+      const nextLabel = document.getElementById("btn-next-label");
+      nextLabel.textContent = idx === total - 1 ? "Selesai & Cek" : "Selanjutnya";
+
+      updateProgressStats();
+      renderQuestionNavGrid();
+    }
+
+    function renderSingleChoiceOptions(question, container) {
+      const selectedKey = appState.session.answers[question.id] || "";
+
+      question.options.forEach((opt) => {
+        const isSelected = selectedKey === opt.key;
+        const label = document.createElement("label");
+        label.className = `flex items-start gap-3.5 p-4 rounded-xl border-2 cursor-pointer transition select-none ${
+          isSelected
+            ? "bg-brand-50/80 border-brand-600 shadow-xs"
+            : "bg-white border-slate-200 hover:border-brand-300 hover:bg-slate-50"
+        }`;
+
+        label.innerHTML = `
+          <input
+            type="radio"
+            name="pg_q_${question.id}"
+            value="${opt.key}"
+            class="sr-only"
+            ${isSelected ? "checked" : ""}
+          />
+          <span class="w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center font-extrabold text-sm transition ${
+            isSelected
+              ? "bg-brand-700 text-white"
+              : "bg-slate-100 text-slate-700"
+          }">
+            ${opt.key}
+          </span>
+          <span class="text-sm sm:text-[15px] text-slate-800 font-medium pt-1 leading-snug">
+            ${escapeHtml(opt.text)}
+          </span>
+        `;
+
+        label.addEventListener("click", () => {
+          appState.session.answers[question.id] = opt.key;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        });
+
+        container.appendChild(label);
+      });
+    }
+
+    function renderMultipleChoiceOptions(question, container) {
+      const selectedKeys = Array.isArray(appState.session.answers[question.id])
+        ? appState.session.answers[question.id]
+        : [];
+
+      question.options.forEach((opt) => {
+        const isChecked = selectedKeys.includes(opt.key);
+        const label = document.createElement("label");
+        label.className = `flex items-start gap-3.5 p-4 rounded-xl border-2 cursor-pointer transition select-none ${
+          isChecked
+            ? "bg-indigo-50/70 border-indigo-600 shadow-xs"
+            : "bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50"
+        }`;
+
+        label.innerHTML = `
+          <div class="mt-0.5 w-6 h-6 rounded-md border-2 flex-shrink-0 flex items-center justify-center transition ${
+            isChecked
+              ? "bg-indigo-600 border-indigo-600 text-white"
+              : "bg-white border-slate-300"
+          }">
+            ${
+              isChecked
+                ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`
+                : ""
+            }
+          </div>
+          <div class="flex-1 text-sm sm:text-[15px] text-slate-800 font-medium leading-snug">
+            <span class="font-extrabold text-slate-900 mr-1.5">${opt.key}.</span>
+            ${escapeHtml(opt.text)}
+          </div>
+        `;
+
+        label.addEventListener("click", (e) => {
+          e.preventDefault();
+          let current = Array.isArray(appState.session.answers[question.id])
+            ? [...appState.session.answers[question.id]]
+            : [];
+
+          if (current.includes(opt.key)) {
+            current = current.filter((k) => k !== opt.key);
+          } else {
+            // Mengizinkan siswa memilih maksimal 2 pilihan (sesuai instruksi "Pilihlah dua jawaban")
+            // Jika sudah memilih 2, kita beri notifikasi ringan atau ganti pilihan paling awal agar intuitif
+            if (current.length >= 2) {
+              current.shift();
+            }
+            current.push(opt.key);
+          }
+
+          current.sort();
+          appState.session.answers[question.id] = current;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        });
+
+        container.appendChild(label);
+      });
+
+      const countInfo = document.createElement("div");
+      countInfo.className = "text-xs text-slate-500 pt-1 flex items-center justify-between";
+      countInfo.innerHTML = `
+        <span>Terpilih: <strong class="${selectedKeys.length === 2 ? 'text-emerald-700' : 'text-amber-700'}">${selectedKeys.length} dari 2 pilihan</strong></span>
+        ${selectedKeys.length > 0 ? `<button type="button" id="btn-reset-pgk" class="text-red-600 hover:underline font-semibold">Reset Pilihan</button>` : ""}
+      `;
+      container.appendChild(countInfo);
+
+      const resetBtn = document.getElementById("btn-reset-pgk");
+      if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+          appState.session.answers[question.id] = [];
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        });
+      }
+    }
+
+    function renderTrueFalseMatrix(question, container) {
+      const currentAnswers = Array.isArray(appState.session.answers[question.id])
+        ? appState.session.answers[question.id]
+        : new Array(question.statements.length).fill("");
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "border border-slate-200 rounded-xl overflow-hidden bg-white";
+
+      // Header Tabel
+      const header = document.createElement("div");
+      header.className = "grid grid-cols-12 bg-slate-100 border-b border-slate-200 px-4 py-3 text-xs font-extrabold text-slate-700 uppercase tracking-wider";
+      header.innerHTML = `
+        <div class="col-span-7 sm:col-span-8">Pernyataan</div>
+        <div class="col-span-5 sm:col-span-4 grid grid-cols-2 text-center">
+          <span>Benar</span>
+          <span>Salah</span>
+        </div>
+      `;
+      wrapper.appendChild(header);
+
+      // Baris Pernyataan
+      question.statements.forEach((stmt, sIdx) => {
+        const val = currentAnswers[sIdx] || "";
+        const row = document.createElement("div");
+        row.className = `grid grid-cols-12 items-center px-4 py-3.5 border-b last:border-b-0 border-slate-200 gap-2 ${
+          sIdx % 2 === 1 ? "bg-slate-50/50" : "bg-white"
+        }`;
+
+        row.innerHTML = `
+          <div class="col-span-7 sm:col-span-8 text-sm text-slate-800 font-medium leading-snug pr-2">
+            <span class="text-slate-400 font-bold mr-1">${sIdx + 1}.</span> ${escapeHtml(stmt.text)}
+          </div>
+          <div class="col-span-5 sm:col-span-4 grid grid-cols-2 gap-1.5">
+            <button
+              type="button"
+              data-stmt-idx="${sIdx}"
+              data-choice="Benar"
+              class="bs-choice-btn py-2 px-2 rounded-lg text-xs font-extrabold border transition ${
+                val === "Benar"
+                  ? "bg-emerald-600 border-emerald-700 text-white shadow-xs"
+                  : "bg-white border-slate-300 text-slate-600 hover:bg-emerald-50 hover:border-emerald-300"
+              }"
+            >
+              Benar
+            </button>
+            <button
+              type="button"
+              data-stmt-idx="${sIdx}"
+              data-choice="Salah"
+              class="bs-choice-btn py-2 px-2 rounded-lg text-xs font-extrabold border transition ${
+                val === "Salah"
+                  ? "bg-rose-600 border-rose-700 text-white shadow-xs"
+                  : "bg-white border-slate-300 text-slate-600 hover:bg-rose-50 hover:border-rose-300"
+              }"
+            >
+              Salah
+            </button>
+          </div>
+        `;
+        wrapper.appendChild(row);
+      });
+
+      container.appendChild(wrapper);
+
+      wrapper.querySelectorAll(".bs-choice-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const sIdx = Number(btn.getAttribute("data-stmt-idx"));
+          const choice = btn.getAttribute("data-choice");
+          const updated = Array.isArray(appState.session.answers[question.id])
+            ? [...appState.session.answers[question.id]]
+            : new Array(question.statements.length).fill("");
+          updated[sIdx] = choice;
+          appState.session.answers[question.id] = updated;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        });
+      });
+    }
+
+    function renderQuestionNavGrid() {
+      const grid = document.getElementById("question-nav-grid");
+      grid.innerHTML = "";
+
+      appState.session.questionOrder.forEach((qId, index) => {
+        const question = QUESTION_BANK.find((q) => q.id === qId);
+        const isCurrent = index === appState.session.currentIndex;
+        const isFlagged = Boolean(appState.session.flagged[qId]);
+        const answered = isQuestionAnswered(question);
+
+        let colorClasses = "bg-slate-200 text-slate-700 hover:bg-slate-300"; // Abu-abu: belum dijawab
+        if (isFlagged) {
+          colorClasses = "bg-amber-400 text-slate-900 hover:bg-amber-500"; // Kuning: ragu-ragu
+        } else if (answered) {
+          colorClasses = "bg-emerald-600 text-white hover:bg-emerald-700"; // Hijau: terjawab
+        }
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = index + 1;
+        btn.className = `h-10 rounded-xl font-extrabold text-sm flex items-center justify-center transition ${colorClasses} ${
+          isCurrent ? "ring-2 ring-offset-2 ring-slate-900 scale-105" : ""
+        }`;
+
+        btn.addEventListener("click", () => {
+          appState.session.currentIndex = index;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+          closeMobileNavDrawer();
+        });
+
+        grid.appendChild(btn);
+      });
+    }
+
+    function updateProgressStats() {
+      let answeredCount = 0;
+      let flaggedCount = 0;
+
+      appState.session.questionOrder.forEach((qId) => {
+        const q = QUESTION_BANK.find((item) => item.id === qId);
+        if (appState.session.flagged[qId]) flaggedCount++;
+        if (isQuestionAnswered(q)) answeredCount++;
+      });
+
+      const unansweredCount = QUESTION_BANK.length - answeredCount;
+      document.getElementById("progress-counter-text").textContent = `${answeredCount}/${QUESTION_BANK.length}`;
+      document.getElementById("legend-answered").textContent = answeredCount;
+      document.getElementById("legend-flagged").textContent = flaggedCount;
+      document.getElementById("legend-unanswered").textContent = unansweredCount;
+    }
+
+    /**
+     * =====================================================================
+     * PERHITUNGAN SKOR OTOMATIS (SESUAI RUBRIK DOKUMEN) & PENGIRIMAN KE GAS
+     * =====================================================================
+     */
+    function calculateExamResult() {
+      let totalScore = 0;
+      const details = [];
+
+      // Urutkan berdasarkan nomor soal asli (1 - 25) agar guru mudah membaca di Spreadsheet
+      const orderedQuestions = [...QUESTION_BANK].sort((a, b) => a.id - b.id);
+
+      orderedQuestions.forEach((q) => {
+        const userAns = appState.session.answers[q.id];
+        let earnedScore = 0;
+        let formattedUserAns = "-";
+        let formattedKey = "";
+
+        if (q.type === "PG") {
+          formattedKey = q.answerKey;
+          formattedUserAns = typeof userAns === "string" && userAns ? userAns : "-";
+          if (formattedUserAns === q.answerKey) {
+            earnedScore = 3;
+          }
+        } else if (q.type === "PGK") {
+          // Rubrik file: Skor 5 jika kedua jawaban benar dipilih & tidak ada pilihan salah;
+          // Skor 2 jika hanya satu jawaban benar dipilih tanpa pilihan salah; skor 0 lainnya.
+          formattedKey = q.answerKey.join(", ");
+          const chosen = Array.isArray(userAns) ? userAns : [];
+          formattedUserAns = chosen.length > 0 ? chosen.join(", ") : "-";
+
+          if (chosen.length > 0) {
+            const wrongSelected = chosen.some((c) => !q.answerKey.includes(c));
+            const correctSelectedCount = chosen.filter((c) => q.answerKey.includes(c)).length;
+
+            if (!wrongSelected) {
+              if (correctSelectedCount === 2) {
+                earnedScore = 5;
+              } else if (correctSelectedCount === 1) {
+                earnedScore = 2;
+              }
+            }
+          }
+        } else if (q.type === "BS") {
+          // Rubrik file: Skor 2 per pernyataan benar; maksimum 6 per nomor
+          const keys = q.statements.map((s) => s.answer);
+          formattedKey = keys.join(" | ");
+          const chosen = Array.isArray(userAns) ? userAns : ["-", "-", "-"];
+          formattedUserAns = chosen.map((v) => v || "-").join(" | ");
+
+          q.statements.forEach((stmt, idx) => {
+            if (chosen[idx] === stmt.answer) {
+              earnedScore += 2;
+            }
+          });
+        }
+
+        totalScore += earnedScore;
+        details.push({
+          no: q.id,
+          tipe: q.type,
+          jawaban: formattedUserAns,
+          kunci: formattedKey,
+          skor: earnedScore
+        });
+      });
+
+      return {
+        totalScore,
+        maxScore: 100,
+        details
+      };
+    }
+
+    function formatDuration(secondsElapsed) {
+      const mins = Math.floor(secondsElapsed / 60);
+      const secs = secondsElapsed % 60;
+      return `${mins} menit ${secs} detik`;
+    }
+
+    function promptConfirmSubmit() {
+      let answeredCount = 0;
+      let flaggedCount = 0;
+
+      QUESTION_BANK.forEach((q) => {
+        if (isQuestionAnswered(q)) answeredCount++;
+        if (appState.session.flagged[q.id]) flaggedCount++;
+      });
+
+      const unansweredCount = QUESTION_BANK.length - answeredCount;
+
+      let warningSnippet = "";
+      if (unansweredCount > 0 || flaggedCount > 0) {
+        warningSnippet = `
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 space-y-1">
+            ${unansweredCount > 0 ? `<p>&bull; Masih ada <strong>${unansweredCount} soal</strong> yang belum terjawab lengkap.</p>` : ""}
+            ${flaggedCount > 0 ? `<p>&bull; Masih ada <strong>${flaggedCount} soal</strong> yang ditandai ragu-ragu.</p>` : ""}
+            <p class="pt-1 font-semibold">Apakah Anda yakin tetap ingin mengakhiri ujian sekarang?</p>
+          </div>
+        `;
+      } else {
+        warningSnippet = `
+          <p class="text-emerald-700 font-semibold text-xs bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+            Seluruh 25 butir soal telah terjawab dengan lengkap. Pastikan jawaban Anda sudah diperiksa dengan teliti.
+          </p>
+        `;
+      }
+
+      showModal({
+        type: "info",
+        title: "Konfirmasi Kumpulkan Ujian",
+        bodyHtml: `
+          <p>Setelah dikumpulkan, jawaban akan dikunci dan Anda tidak dapat mengerjakan ulang mata pelajaran ini.</p>
+          ${warningSnippet}
+        `,
+        buttons: [
+          {
+            label: "Periksa Kembali",
+            primary: false
+          },
+          {
+            label: "Ya, Kumpulkan Sekarang",
+            primary: true,
+            onClick: () => submitExam(false)
+          }
+        ]
+      });
+    }
+
+    async function submitExam(isAutoSubmit = false) {
+      if (appState.isSubmitting || !appState.session) return;
+      appState.isSubmitting = true;
+
+      if (appState.timerInterval) {
+        clearInterval(appState.timerInterval);
+      }
+
+      showLoader(
+        isAutoSubmit ? "Waktu Habis! Mengumpulkan Jawaban..." : "Mengirim Jawaban ke Server...",
+        "Mohon jangan menutup browser hingga bukti pengumpulan muncul."
+      );
+
+      const result = calculateExamResult();
+      const totalSecondsAllowed = EXAM_CONFIG.durationMinutes * 60;
+      const elapsedSeconds = Math.max(1, totalSecondsAllowed - appState.session.remainingSeconds);
+      const durationStr = formatDuration(elapsedSeconds);
+      const nowStr = new Date().toLocaleString("id-ID", {
+        dateStyle: "full",
+        timeStyle: "medium"
+      });
+
+      const payload = {
+        timestamp: new Date().toISOString(),
+        waktuSelesaiWITA: nowStr,
+        namaSiswa: appState.session.studentName,
+        mataPelajaran: appState.session.subjectName,
+        skorObjektif: result.totalScore,
+        skorMaksimal: result.maxScore,
+        detailJawaban: JSON.stringify(result.details),
+        jumlahPindahTab: appState.session.tabSwitchCount || 0,
+        durasiPengerjaan: durationStr,
+        keteranganKumpul: isAutoSubmit ? "Otomatis (Waktu Habis)" : "Manual oleh Siswa"
+      };
+
+      let serverSavedNote = "Tersimpan Sah di Server Sekolah";
+
+      try {
+        if (GAS_URL && GAS_URL !== "MASUKKAN_URL_WEB_APP_GAS_DI_SINI") {
+          const response = await fetch(GAS_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } else {
+          // Simulasi jeda pengiriman saat GAS_URL masih mode pratinjau
+          await new Promise((r) => setTimeout(r, 800));
+          serverSavedNote = "Tersimpan (Mode Pratinjau Lokal)";
+        }
+      } catch (err) {
+        console.error("Error POST ke GAS:", err);
+        serverSavedNote = "Tersimpan di Perangkat (Perlu Sinkronisasi Pengawas)";
+      } finally {
+        hideLoader();
+
+        const receiptData = {
+          studentName: payload.namaSiswa,
+          subjectName: payload.mataPelajaran,
+          timestamp: nowStr,
+          duration: durationStr,
+          serverStatus: serverSavedNote
+        };
+
+        markExamAsCompletedLocally(payload.namaSiswa, payload.mataPelajaran, receiptData);
+        clearActiveSessionFromStorage();
+        appState.session = null;
+        appState.isSubmitting = false;
+
+        showReceiptScreen(receiptData);
+      }
+    }
+
+    function showReceiptScreen(receiptData) {
+      document.getElementById("view-login").classList.add("hidden");
+      document.getElementById("view-exam").classList.add("hidden");
+      document.getElementById("view-submitted").classList.remove("hidden");
+
+      document.getElementById("receipt-student").textContent = receiptData.studentName;
+      document.getElementById("receipt-subject").textContent = receiptData.subjectName;
+      document.getElementById("receipt-timestamp").textContent = receiptData.timestamp;
+      document.getElementById("receipt-duration").textContent = receiptData.duration;
+      document.getElementById("receipt-server-status").innerHTML = `
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> ${escapeHtml(receiptData.serverStatus)}
+      `;
+    }
+
+    /**
+     * =====================================================================
+     * DRAWER NAVIGASI MOBILE & HELPER
+     * =====================================================================
+     */
+    function openMobileNavDrawer() {
+      document.getElementById("nav-panel-backdrop").classList.remove("hidden");
+    }
+
+    function closeMobileNavDrawer() {
+      document.getElementById("nav-panel-backdrop").classList.add("hidden");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /**
+     * =====================================================================
+     * INISIALISASI EVENT LISTENERS & STARTUP
+     * =====================================================================
+     */
+    document.addEventListener("DOMContentLoaded", () => {
+      setupStudentSearchEvents();
+
+      // Tombol retry fetch GAS
+      document.getElementById("btn-retry-fetch").addEventListener("click", () => {
+        fetchInitialDataFromGAS();
+      });
+
+      // Form Submit Login -> Validasi & Mulai Ujian
+      document.getElementById("login-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const typedName = document.getElementById("student-search-input").value.trim();
+        const selectedVal = document.getElementById("selected-student-value").value.trim();
+        const subjectVal = document.getElementById("subject-select").value.trim();
+
+        // Cocokkan nama siswa dari daftar dropdown
+        const matchedStudent =
+          selectedVal ||
+          appState.studentsList.find((s) => s.toLowerCase() === typedName.toLowerCase()) ||
+          "";
+
+        if (!matchedStudent) {
+          showModal({
+            type: "warning",
+            title: "Nama Peserta Belum Dipilih",
+            bodyHtml: `<p>Silakan pilih <strong>Nama Peserta Didik</strong> Anda yang tertera pada daftar dropdown sebelum memulai ujian.</p>`,
+            buttons: [{ label: "Baik, Saya Pilih", primary: true }]
+          });
+          return;
+        }
+
+        if (!subjectVal) {
+          showModal({
+            type: "warning",
+            title: "Mata Pelajaran Belum Dipilih",
+            bodyHtml: `<p>Silakan pilih mata pelajaran ujian terlebih dahulu.</p>`,
+            buttons: [{ label: "Oke", primary: true }]
+          });
+          return;
+        }
+
+        // Validasi agar siswa yang sudah mengumpulkan mapel yang sama tidak dapat mengerjakan ulang
+        if (hasAlreadySubmitted(matchedStudent, subjectVal)) {
+          showModal({
+            type: "danger",
+            title: "Akses Ujian Ditolak",
+            bodyHtml: `
+              <p>Peserta atas nama <strong>${escapeHtml(matchedStudent)}</strong> tercatat <strong>sudah mengumpulkan jawaban</strong> untuk mata pelajaran <strong>${escapeHtml(subjectVal)}</strong>.</p>
+              <p class="text-xs text-slate-500">Setiap peserta hanya diperbolehkan mengerjakan 1 kali. Hubungi pengawas jika terjadi kendala.</p>
+            `,
+            buttons: [{ label: "Tutup", primary: true }]
+          });
+          return;
+        }
+
+        startNewExamSession(matchedStudent, subjectVal);
+      });
+
+      // Navigasi Soal: Sebelumnya, Selanjutnya, Ragu-ragu, Kumpulkan
+      document.getElementById("btn-prev-q").addEventListener("click", () => {
+        if (appState.session.currentIndex > 0) {
+          appState.session.currentIndex -= 1;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        }
+      });
+
+      document.getElementById("btn-next-q").addEventListener("click", () => {
+        const total = appState.session.questionOrder.length;
+        if (appState.session.currentIndex < total - 1) {
+          appState.session.currentIndex += 1;
+          saveActiveSessionToStorage();
+          renderCurrentQuestion();
+        } else {
+          promptConfirmSubmit();
+        }
+      });
+
+      document.getElementById("checkbox-ragu").addEventListener("change", (e) => {
+        const q = getQuestionByOrderIndex(appState.session.currentIndex);
+        if (e.target.checked) {
+          appState.session.flagged[q.id] = true;
+        } else {
+          delete appState.session.flagged[q.id];
+        }
+        saveActiveSessionToStorage();
+        updateProgressStats();
+        renderQuestionNavGrid();
+      });
+
+      document.getElementById("btn-open-submit-modal").addEventListener("click", () => {
+        closeMobileNavDrawer();
+        promptConfirmSubmit();
+      });
+
+      // Mobile drawer toggles
+      document.getElementById("btn-toggle-mobile-nav").addEventListener("click", openMobileNavDrawer);
+      document.getElementById("btn-close-mobile-nav").addEventListener("click", closeMobileNavDrawer);
+      document.getElementById("nav-panel-backdrop").addEventListener("click", (e) => {
+        if (e.target.id === "nav-panel-backdrop") {
+          closeMobileNavDrawer();
+        }
+      });
+
+      // Tombol kembali ke halaman awal dari layar bukti selesai
+      document.getElementById("btn-back-to-login").addEventListener("click", () => {
+        document.getElementById("view-submitted").classList.add("hidden");
+        document.getElementById("view-login").classList.remove("hidden");
+        document.getElementById("student-search-input").value = "";
+        document.getElementById("selected-student-value").value = "";
+        document.getElementById("btn-clear-student").classList.add("hidden");
+      });
+
+      // Cek apakah ada sesi ujian yang belum selesai di localStorage (akibat refresh browser)
+      const existingSession = loadSavedSessionFromStorage();
+      if (existingSession && existingSession.remainingSeconds > 0 && !hasAlreadySubmitted(existingSession.studentName, existingSession.subjectName)) {
+        resumeSavedExamSession(existingSession);
+      } else {
+        clearActiveSessionFromStorage();
+        fetchInitialDataFromGAS();
+      }
+    });
+  </script>
+</body>
+</html>
